@@ -381,6 +381,10 @@ class ShoppingCart {
 
 }
 
+/*
+ * Below is the code for the old CustomerID & SKU classes, which were replaced by records
+ */
+
 
 // class CustomerID {
 // 	private final String id;
