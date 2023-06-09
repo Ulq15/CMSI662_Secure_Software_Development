@@ -46,7 +46,7 @@ char *pop(Stack* stack) {
         fprintf(stderr, "Error: pop() called on empty stack.\n");
         exit(EXIT_FAILURE);
     }
-    if (stack->size < stack->capacity / 4) {
+    if (stack->size < stack->capacity / 3) {
         shrink(stack);
     }
     char* item = (char*)calloc(1, sizeof(char*));
@@ -75,7 +75,7 @@ int isFull(Stack* stack) {
 }
 
 void expand(Stack* stack) {
-    if (!((stack->size <= stack->capacity) && (stack->size > (stack->capacity / 2)))) {
+    if (!((stack->size <= stack->capacity) && (stack->size > ((3 * stack->capacity) / 4)))) {
         fprintf(stderr, "Error - expand(): Can only expand array when it is near full.\n");
         exit(EXIT_FAILURE);
     }
@@ -89,8 +89,8 @@ void expand(Stack* stack) {
 }
 
 void shrink(Stack* stack) {
-    if (!(stack->size <= 1) && (stack->size < stack->capacity / 4 )) {
-        fprintf(stderr, "Error - shrink(): Can only shrink array when size is less than a quarter of capacity.\n");
+    if (!(stack->size <= 1) && (stack->size < stack->capacity / 3 )) {
+        fprintf(stderr, "Error - shrink(): Can only shrink array when size is less than a half of capacity.\n");
         exit(EXIT_FAILURE);
     }
     // printf("Shrinking stack from %d to %d\n", stack->capacity, stack->capacity / 2);
@@ -103,11 +103,11 @@ void shrink(Stack* stack) {
 }
 
 void printStack(Stack* stack) {
-    printf("Stack: ");
+    printf("Stack: Bottom:{ ");
     for (int i = 0; i < stack->size; i++) {
         printf("%s ", stack->array[i]);
     }
-    printf("\n\n");
+    printf("}:Top\n");
 }
 
 void destroy(Stack* stack) {
@@ -131,8 +131,10 @@ int main() {
 
     assert(isEmpty(s) == 1);
     printf("Stack should be Empty, and it is %s\n", isEmpty(s) ? "empty" : "not empty");
+    // pop(s); // cannot pop from empty stack
 
     printStack(s);
+    printf("\n");
 
     printf("pushing 1st item.\n");
     push(s, str1);
@@ -144,43 +146,34 @@ int main() {
     push(s, str2);
     
     printStack(s);
+    printf("\n");
 
     assert(isFull(s) == 1);
     printf("The stack should be full now, and it is %s\n", isFull(s) ? "full" : "not full");
-    printf("The size/capacity of the stack is: %d/%d\n\n", s->size, s->capacity);
+    printf("The size/capacity of the stack is: %d/%d\n", s->size, s->capacity);
+    printf("\n");
 
     push(s, str3);
     printf("The stack should have expanded now.\n");
-    printf("The size/capacity of the stack is: %d/%d\n\n", s->size, s->capacity);
-
+    printf("The size/capacity of the stack is: %d/%d\n", s->size, s->capacity);
+    printf("\n");
+    
     push(s, str4);
     push(s, str5);
     push(s, str6);
 
     printStack(s);
 
-    printf("peeking %s\n", peek(s));
-    printf("popped %s\n", pop(s));
-        
-    printf("peeking %s\n", peek(s));
-    printf("popped %s\n", pop(s));
-        
-    printf("peeking %s\n", peek(s));
-    printf("popped %s\n", pop(s));
-    
-    printf("peeking %s\n", peek(s));
-    printf("popped %s\n", pop(s));
-    
-    printStack(s);
+    for (size_t i = 0; i < 6; i++)
+    {
+        printf("\n");
+        printf("peeking %s\n", peek(s));
+        printf("popped %s\n", pop(s));
+        printStack(s);
+    }
+    // pop(s); // cannot pop from empty stack
 
-    printf("peeking %s\n", peek(s));
-    printf("popped %s\n", pop(s));
-
-    printf("peeking %s\n", peek(s));
-    printf("popped %s\n", pop(s));
-    
-    printStack(s);
-
+    destroy(s);
     return 0;
 }
 
