@@ -131,8 +131,9 @@ int main() {
 
     assert(isEmpty(s) == 1);
     printf("Stack should be Empty, and it is %s\n", isEmpty(s) ? "empty" : "not empty");
-    // pop(s); // cannot pop from empty stack
-
+    // pop(s); // cannot pop from empty stack - will exit program
+    // peek(s); // cannot peek from empty stack - will exit program
+    
     printStack(s);
     printf("\n");
 
@@ -171,7 +172,7 @@ int main() {
         printf("popped %s\n", pop(s));
         printStack(s);
     }
-    // pop(s); // cannot pop from empty stack
+    // pop(s); // cannot pop from empty stack - will exit program
 
     destroy(s);
     return 0;
