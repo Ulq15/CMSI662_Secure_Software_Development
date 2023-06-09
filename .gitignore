@@ -2,3 +2,7 @@
 *.sha*
 *.repositories
 *.class
+*.exe
+HW3/java/Stack.java
+HW3/c_linkedlist/stack.h
+HW3/c_linkedlist/stack.c
