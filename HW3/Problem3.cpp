@@ -1,34 +1,35 @@
 #include <iostream>
 #include <string>
+#include <memory>
 using namespace std;
 
-struct Stack {
+class Stack {
 private:
     int top;
     int capacity;
-    string *storage;
+    unique_ptr<string> *storage;
 
 public:
     Stack(int capacity) {
         if (capacity <= 0)
             throw string("Stack's capacity must be positive");
-        storage = new string[capacity];
+        storage = new unique_ptr<string>[capacity];
         this->capacity = capacity;
         top = -1;
     }
     
-    void push(int value) {
+    void push(string value) {
         if (isFull()){
             expand();
         }
         top++;
-        storage[top] = value;
+        storage[top] = make_unique<string>(value);
     }
 
     string peek() {
         if (top == -1)
             throw string("Stack is empty");
-        return storage[top];
+        return *(storage[top]);
     }
 
     string pop() {
@@ -38,7 +39,8 @@ public:
             shrink();
         }
         top--;
-        return storage[top + 1];
+
+        return *(storage[top + 1]).release();
     }
 
     int isEmpty() {
@@ -51,9 +53,9 @@ public:
 
     void expand(){
         cout << "Expanding from " << capacity << " to " << capacity * 2 << endl;
-        string *newStorage = new string[capacity * 2];
+        unique_ptr<string> *newStorage = new unique_ptr<string>[capacity * 2];
         for (int i = 0; i < capacity; i++){
-            newStorage[i] = storage[i];
+            newStorage[i] = move(storage[i]);
         }
         delete[] storage;
         storage = newStorage;
@@ -62,9 +64,9 @@ public:
 
     void shrink(){
         cout << "Shrinking from " << capacity << " to " << capacity / 2 << endl;
-        string *newStorage = new string[capacity / 2];
+        unique_ptr<string> *newStorage = new unique_ptr<string>[capacity / 2];
         for (int i = 0; i < top+1; i++){
-            newStorage[i] = storage[i];
+            newStorage[i] = move(storage[i]);
         }
         delete[] storage;
         storage = newStorage;
@@ -75,7 +77,7 @@ public:
         string result = "Bottom[";
         for (int i = 0; i <= top; i++){
             result += " ";
-            result += storage[i];
+            result += *storage[i].get();
         }
         result += " ]Top";
         return result;
@@ -86,6 +88,9 @@ public:
     }
 
     ~Stack() {
+        while(!isEmpty()){
+            pop();
+        }
         delete[] storage;
     }
 };
@@ -96,27 +101,33 @@ int main() {
     string empty = (myStack.isEmpty() == 1) ? "true" : "false";
     cout << "is stack empty? " << empty << endl;
     
-    myStack.push('1');
+    myStack.push("1");
     cout << "Pushed " << myStack.peek() << endl;
-    myStack.push('2');
+    myStack.push("2");
     cout << "Pushed " << myStack.peek() << endl;
-    myStack.push('3');
+    myStack.push("3");
     cout << "Pushed " << myStack.peek() << endl;
-    myStack.push('4');
+    myStack.push("4");
     cout << "Pushed " << myStack.peek() << endl;
-    myStack.push('5');
+
+    myStack.print();
+
+    myStack.push("5");
     cout << "Pushed " << myStack.peek() << endl;
-    myStack.push('6');
+    myStack.push("6");
     cout << "Pushed " << myStack.peek() << endl;
-    myStack.push('7');
+    myStack.push("7");
     cout << "Peeked " << myStack.peek() << endl;
     
     myStack.print();
+    cout << endl;
 
     while (myStack.isEmpty() == 0) {
         string temp = myStack.pop();
         cout << "Popped " << temp << endl;
+        myStack.print();
+        cout << endl;
     }
-
+    myStack.~Stack();
     return 0;
 }
