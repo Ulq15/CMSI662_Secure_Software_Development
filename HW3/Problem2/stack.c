@@ -4,6 +4,12 @@
 #include <assert.h>
 #include "stack.h"
 
+#define INVALIDARGUMENT 2
+#define EMPTYSTACK 3
+#define ALLOCATIONFAILURE 4
+#define ILLEGALRESIZE 5
+
+
 struct stack {
     char** array;
     char** top;
@@ -14,17 +20,17 @@ struct stack {
 Stack *makeStack(unsigned int capacity) {
     if (capacity < 0) {
         fprintf(stderr, "Error - makeStack(): capacity must be a positive integer.\n");
-        exit(EXIT_FAILURE);
+        exit(INVALIDARGUMENT);
     }
     Stack* stack = (Stack*)calloc(1, sizeof(Stack));
     if (stack == NULL) {
         fprintf(stderr, "Error - makeStack(): failed to allocate memory for stack.\n");
-        exit(EXIT_FAILURE);
+        exit(ALLOCATIONFAILURE);
     }
     stack->array = (char**)calloc(capacity, sizeof(char*));
     if (stack->array == NULL) {
         fprintf(stderr, "Error - makeStack(): failed to allocate memory for stack's array.\n");
-        exit(EXIT_FAILURE);
+        exit(ALLOCATIONFAILURE);
     }
     stack->top = stack->array;
     stack->size = 0u;
@@ -43,13 +49,17 @@ void push(Stack* stack, char *item) {
 
 char *pop(Stack* stack) {
     if (isEmpty(stack) == 1) {
-        fprintf(stderr, "Error: pop() called on empty stack.\n");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Error - pop(): called on empty stack.\n");
+        exit(EMPTYSTACK);
     }
     if (stack->size < stack->capacity / 3) {
         shrink(stack);
     }
     char* item = (char*)calloc(1, sizeof(char*));
+    if (item == NULL) {
+        fprintf(stderr, "Error - pop(): failed to allocate memory for copy of item.\n");
+        exit(ALLOCATIONFAILURE);
+    }
     strcpy(item, *(stack->top));
     stack->size--;
     stack->top = stack->array + stack->size - 1;
@@ -58,10 +68,14 @@ char *pop(Stack* stack) {
 
 char *peek(Stack* stack) {
     if (isEmpty(stack) == 1) {
-        fprintf(stderr, "Error: peek() called on empty stack.\n");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Error - peek(): called on empty stack.\n");
+        exit(EMPTYSTACK);
     }
     char* item = (char*)calloc(1, sizeof(char*));
+    if (item == NULL) {
+        fprintf(stderr, "Error - peek(): failed to allocate memory for copy of item.\n");
+        exit(ALLOCATIONFAILURE);
+    }
     strcpy(item, *(stack->top));
     return item;
 }
@@ -77,13 +91,13 @@ int isFull(Stack* stack) {
 void expand(Stack* stack) {
     if (!((stack->size <= stack->capacity) && (stack->size > ((3 * stack->capacity) / 4)))) {
         fprintf(stderr, "Error - expand(): Can only expand array when it is near full.\n");
-        exit(EXIT_FAILURE);
+        exit(ILLEGALRESIZE);
     }
     // printf("Expanding stack from %d to %d\n", stack->capacity, stack->capacity * 2);
     stack->array = realloc(stack->array, (stack->capacity * 2) * sizeof(char*));
     if (stack->array == NULL) {
         fprintf(stderr, "Error - expand(): failed to reallocate memory while expanding the stack.\n");
-        exit(EXIT_FAILURE);
+        exit(ALLOCATIONFAILURE);
     }
     stack->capacity = stack->capacity * 2;
 }
@@ -91,13 +105,13 @@ void expand(Stack* stack) {
 void shrink(Stack* stack) {
     if (!(stack->size <= 1) && (stack->size < stack->capacity / 3 )) {
         fprintf(stderr, "Error - shrink(): Can only shrink array when size is less than a half of capacity.\n");
-        exit(EXIT_FAILURE);
+        exit(ILLEGALRESIZE);
     }
     // printf("Shrinking stack from %d to %d\n", stack->capacity, stack->capacity / 2);
     stack->array = realloc(stack->array, (stack->capacity / 2) * sizeof(char*));
     if (stack->array == NULL) {
         fprintf(stderr, "Error - shrink(): failed to reallocate memory while shrinking the stack.\n");
-        exit(EXIT_FAILURE);
+        exit(ALLOCATIONFAILURE);
     }
     stack->capacity = stack->capacity / 2;
 }
