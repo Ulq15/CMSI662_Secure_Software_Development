@@ -43,7 +43,8 @@ def main():
 
 	cipher_text = encrypt(message, e, n)
 	print("Encrypted = " + str(cipher_text))
-
+	print("Encrypted Hex = " + hex(cipher_text).removeprefix('0x'))
+	
 	# Decrypt ciphertext
 	decrypted = decrypt(cipher_text, d, n)
 	print("Decrypted = " + str(decrypted))
