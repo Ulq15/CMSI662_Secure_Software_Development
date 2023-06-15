@@ -1,0 +1,11 @@
+{
+  "name": "hw4",
+  "version": "1.0.0",
+  "description": "A command line application that takes in four command line arguments. The first is either -e or -d (for encrypt and decrypt, respectively). The second is either a message to encrypt or a ciphertext to decrypt. The third is the key. The fourth is an initialization vector. If encrypting, the program assumes the string argument is a utf-8 encoded string and outputs the AES256-CBC encoding of the input, as a hexadecimal string. If decrypting, the string argument is assumed to be a hexadecimal representation of a byte sequence, and the output should be the decrypted string.",
+  "main": "aes256cbc.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hassan Hage Hassan",
+  "license": "AGPL-3.0"
+}
